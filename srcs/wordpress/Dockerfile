@@ -22,9 +22,8 @@ RUN	mkdir -p /var/www
 RUN	wget -O /tmp/wordpress.tar.gz https://wordpress.org/latest.tar.gz
 RUN	tar -xzvf /tmp/wordpress.tar.gz -C /var/www/.
 
-#COPY srcs/run.sh /scripts/run.sh
-#COPY srcs/nginx.conf /etc/nginx/sites-available/default
+COPY tools/wp-config.php /var/www/wordpress/.
 
-EXPOSE 80 443
+EXPOSE 9000
 
 CMD tail -f /dev/null
