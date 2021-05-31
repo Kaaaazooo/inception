@@ -1,0 +1,64 @@
+version: '3'
+
+services:
+  mariadb:
+    build: mariadb
+    container_name: mariadb
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - MYSQL_DATABASE=wordpress
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - app-network
+
+  wordpress:
+    depends_on:
+      - mariadb
+    build: wordpress
+    container_name: wordpress
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - WORDPRESS_DB_HOST=mariadb:3306
+      - WORDPRESS_DB_USER=$MYSQL_USER
+      - WORDPRESS_DB_PASSWORD=$MYSQL_PASSWORD
+      - WORDPRESS_DB_NAME=wordpress
+    volumes:
+      - wordpress:/var/www/html
+    networks:
+      - app-network
+
+  nginx:
+    depends_on:
+      - wordpress
+    build: nginx
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "443:443"
+    volumes:
+      - wordpress:/var/www/html
+      - ./nginx-conf:/etc/nginx/conf.d
+      - cert-etc:/etc/ssl
+    networks:
+      - app-network
+
+  cert:
+    depends_on:
+      - nginx
+    build: tools/cert
+    container_name: cert
+    volumes:
+      - cert-etc:/etc/ssl
+      - wordpress:/var/www/html
+
+volumes:
+  cert-etc:
+  wordpress:
+  dbdata:
+
+networks:
+  app-network:
+    driver: bridge
