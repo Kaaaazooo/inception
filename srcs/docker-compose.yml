@@ -2,12 +2,18 @@ version: '3'
 
 services:
   mariadb:
-    build: mariadb
+    build: requirements/mariadb
     container_name: mariadb
     restart: unless-stopped
     env_file: .env
     environment:
-      - MYSQL_DATABASE=wordpress
+      - MYSQL_DATABASE=$MYSQL_DATABASE
+      - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+      - MYSQL_ADMIN_USER=$MYSQL_ADMIN_USER
+      - MYSQL_ADMIN_PASSWORD=$MYSQL_ADMIN_PASSWORD
+      - MYSQL_USER=$MYSQL_USER
+      - MYSQL_USER_PASSWORD=$MYSQL_USER_PASSWORD
+
     volumes:
       - dbdata:/var/lib/mysql
     networks:
@@ -16,7 +22,7 @@ services:
   wordpress:
     depends_on:
       - mariadb
-    build: wordpress
+    build: requirements/wordpress
     container_name: wordpress
     restart: unless-stopped
     env_file: .env
@@ -33,14 +39,13 @@ services:
   nginx:
     depends_on:
       - wordpress
-    build: nginx
+    build: requirements/nginx
     container_name: nginx
     restart: unless-stopped
     ports:
       - "443:443"
     volumes:
       - wordpress:/var/www/html
-      - ./nginx-conf:/etc/nginx/conf.d
       - cert-etc:/etc/ssl
     networks:
       - app-network
@@ -48,7 +53,7 @@ services:
   cert:
     depends_on:
       - nginx
-    build: tools/cert
+    build: requirements/tools/cert
     container_name: cert
     volumes:
       - cert-etc:/etc/ssl

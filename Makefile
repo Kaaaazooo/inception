@@ -1,11 +1,9 @@
-NGINX = srcs/nginx
-WORDPRESS = srcs/wordpress
-MARIADB = srcs/mariadb
+all: up
 
-all: build
-
-build:
+up:
+	cd srcs && docker-compose up -d
 
 stop:
+	cd srcs && docker-compose stop
 
-re:
+re: stop all
