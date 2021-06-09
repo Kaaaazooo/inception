@@ -1,14 +1,14 @@
-FROM debian:buster
+FROM alpine:3.12
 
-RUN	apt-get update && \
-	apt-get install -y nginx openssl
+RUN	apk update && \
+	apk upgrade && \
+	apk add nginx openssl
 
 COPY tools/run.sh /scripts/run.sh
-COPY tools/nginx.conf /etc/nginx/sites-available/default
+COPY tools/nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 443
 
 RUN chmod +x /scripts/run.sh
 
-EXPOSE 80 443
-
-#CMD tail -f /dev/null
 CMD sh /scripts/run.sh

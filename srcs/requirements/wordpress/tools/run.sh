@@ -1,1 +1,2 @@
-php-fpm7
+mkdir -p /run/nginx
+php-fpm7 && nginx -g "daemon off;"

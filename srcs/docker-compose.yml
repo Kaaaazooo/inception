@@ -13,11 +13,12 @@ services:
       - MYSQL_ADMIN_PASSWORD=$MYSQL_ADMIN_PASSWORD
       - MYSQL_USER=$MYSQL_USER
       - MYSQL_USER_PASSWORD=$MYSQL_USER_PASSWORD
-
+    ports:
+      - "3306:3306"
     volumes:
       - dbdata:/var/lib/mysql
     networks:
-      - app-network
+      - my-network
 
   wordpress:
     depends_on:
@@ -31,10 +32,12 @@ services:
       - WORDPRESS_DB_USER=$MYSQL_USER
       - WORDPRESS_DB_PASSWORD=$MYSQL_PASSWORD
       - WORDPRESS_DB_NAME=wordpress
+    ports:
+      - "9000:9000"
     volumes:
       - wordpress:/var/www/html
     networks:
-      - app-network
+      - my-network
 
   nginx:
     depends_on:
@@ -48,7 +51,7 @@ services:
       - wordpress:/var/www/html
       - cert-etc:/etc/ssl
     networks:
-      - app-network
+      - my-network
 
   cert:
     depends_on:
@@ -58,6 +61,8 @@ services:
     volumes:
       - cert-etc:/etc/ssl
       - wordpress:/var/www/html
+    networks:
+      - my-network
 
 volumes:
   cert-etc:
@@ -65,5 +70,4 @@ volumes:
   dbdata:
 
 networks:
-  app-network:
-    driver: bridge
+    my-network:

@@ -1,12 +1,30 @@
-mkdir -p /run/mysqld
-mysql_install_db --user=root
-service mysql start
-echo "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;" | mysql -u root --skip-password
-echo "GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO '$MYSQL_ADMIN_USER'@'%' IDENTIFIED BY $MYSQL_ADMIN_PASSWORD;" | mysql -u root --skip-password
-echo "FLUSH PRIVILEGES;" | mysql -u root --skip-password
-echo "GRANT SELECT ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'%' IDENTIFIED BY $MYSQL_USER_PASSWORD;" | mysql -u root --skip-password
-echo "FLUSH PRIVILEGES;" | mysql -u root --skip-password
-echo "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD'" | mysql -u root --skip-password
-echo "update mysql.user set plugin = 'mysql_native_password' where user='root';" | mysql -u root
-#cat wp_db.sql | mysqld -u root --bootstrap
-#mysqld -u root
+if [ -d "/run/mysqld" ]; then
+	echo "mysqld already exists."
+	chown -R mysql:mysql /run/mysqld
+else
+	echo "mysqld not found, creating..."
+	mkdir -p /run/mysqld
+	chown -R mysql:mysql /run/mysqld
+fi
+
+if [ -d /var/lib/mysql/mysql ]; then
+	echo "MySQL directory already exists."
+	chown -R mysql:mysql /var/lib/mysql/mysql
+else
+	echo "MySQL directory not found, creating..."
+	chown -R mysql:mysql /var/lib/mysql/mysql
+	mysql_install_db --user=mysql --ldata=/var/lib/mysql
+	tfile=$(mktemp)
+	cat << EOF > $tfile
+CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;
+FLUSH PRIVILEGES;
+GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO '$MYSQL_ADMIN_USER'@'%' IDENTIFIED BY '$MYSQL_ADMIN_PASSWORD';
+GRANT SELECT ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_USER_PASSWORD';
+FLUSH PRIVILEGES;
+EOF
+
+	mysqld -u mysql --bootstrap --skip-networking=0 < $tfile
+	rm -f $tfile
+	mysqld -u mysql --skip-networking=0
+
+fi
