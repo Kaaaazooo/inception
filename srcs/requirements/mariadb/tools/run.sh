@@ -25,6 +25,6 @@ EOF
 
 	mysqld -u mysql --bootstrap --skip-networking=0 < $tfile
 	rm -f $tfile
-	mysqld -u mysql --skip-networking=0
 
 fi
+	mysqld -u mysql --skip-networking=0

@@ -49,23 +49,23 @@ services:
       - "443:443"
     volumes:
       - wordpress:/var/www/html
-      - cert-etc:/etc/ssl
+        #      - cert-etc:/etc/ssl
     networks:
       - my-network
 
-  cert:
-    depends_on:
-      - nginx
-    build: requirements/tools/cert
-    container_name: cert
-    volumes:
-      - cert-etc:/etc/ssl
-      - wordpress:/var/www/html
-    networks:
-      - my-network
+        #  cert:
+        #    depends_on:
+        #      - nginx
+        #    build: requirements/tools/cert
+        #    container_name: cert
+        #    volumes:
+        #      - cert-etc:/etc/ssl
+        #      - wordpress:/var/www/html
+        #    networks:
+        #      - my-network
 
 volumes:
-  cert-etc:
+  #  cert-etc:
   wordpress:
   dbdata:
 

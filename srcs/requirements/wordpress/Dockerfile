@@ -8,7 +8,6 @@ RUN	apk add bash \
 RUN	wget -O /tmp/wordpress.tar.gz https://wordpress.org/latest.tar.gz
 RUN	tar -xzvf /tmp/wordpress.tar.gz -C /var/www
 
-COPY	tools/wordpress.conf /etc/nginx/conf.d/default.conf
 COPY	tools/wp-config.php /var/www/wordpress
 COPY	tools/run.sh .
 RUN	chmod +x run.sh

@@ -1,14 +1,22 @@
-FROM alpine:3.12
+FROM	debian:buster
 
-RUN	apk update && \
-	apk upgrade && \
-	apk add nginx openssl
 
-COPY tools/run.sh /scripts/run.sh
-COPY tools/nginx.conf /etc/nginx/conf.d/default.conf
+RUN	apt-get update \
+	&& apt-get install dumb-init nginx -y
 
-EXPOSE 443
+RUN	apt-get install openssl -y
 
-RUN chmod +x /scripts/run.sh
+RUN	openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 \
+	-subj "/C=BE/ST=Belgium/L=Brussels/O=19/CN=sabrugie.42.fr" \
+	-keyout /etc/ssl/private/sabrugie.key -out /etc/ssl/certs/sabrugie.crt
 
-CMD sh /scripts/run.sh
+COPY	./tools/nginx.conf /etc/nginx/nginx.conf
+
+COPY	./tools/hosts /etc/
+
+
+ENTRYPOINT ["/usr/bin/dumb-init"]
+
+EXPOSE	443
+
+CMD	["nginx", "-g", "daemon off;"]

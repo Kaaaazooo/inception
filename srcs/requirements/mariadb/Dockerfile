@@ -4,7 +4,7 @@ RUN apk update && \
 	apk add bash mariadb mariadb-common mariadb-client
 
 COPY tools/wp_db.sql .
-#COPY tools/my.cnf /etc/.
+COPY tools/my.cnf /etc/.
 COPY tools/run.sh .
 
 RUN chmod +x run.sh
