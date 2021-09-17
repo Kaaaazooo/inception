@@ -1,15 +1,28 @@
-FROM	alpine:3.12
-EXPOSE	9000
-RUN	apk add bash \
-		nginx \
-		mysql-client \
-		php7-fpm php7-common php7-iconv php7-json php7-gd php7-curl php7-xml php7-mysqli php7-imap php7-cgi fcgi php7-pdo php7-pdo_mysql php7-soap php7-xmlrpc php7-posix php7-mcrypt php7-gettext php7-ldap php7-ctype php7-dom
+FROM debian:buster
 
-RUN	wget -O /tmp/wordpress.tar.gz https://wordpress.org/latest.tar.gz
-RUN	tar -xzvf /tmp/wordpress.tar.gz -C /var/www
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install vim -y \
+	&& apt-get install tar -y \
+	&& apt-get install php-fpm php-mysql -y \
+	&& mkdir -p /run/php/
 
-COPY	tools/wp-config.php /var/www/wordpress
-COPY	tools/run.sh .
-RUN	chmod +x run.sh
+ADD https://wordpress.org/latest.tar.gz /tmp/latest.tar.gz
+RUN cd /tmp && \
+	tar xzvf latest.tar.gz && \
+	rm latest.tar.gz && \
+	mkdir -p /var/www && \
+	mv -f wordpress /var/www/ && \
+	chmod 775 -R /var/www/wordpress && \
+	chown -R www-data:www-data /var/www/wordpress && \
+	sed -i 's/listen =.*/listen = 9000/' /etc/php/7.3/fpm/pool.d/www.conf
 
-CMD	./run.sh
+
+RUN rm -rf /var/www/wordpress/wp-config-sample.php
+COPY tools/wp-config.php /var/www/wordpress/.
+COPY tools/run.sh /tmp/run.sh
+RUN chmod +x /tmp/run.sh 
+
+ENTRYPOINT [ "/tmp/run.sh" ]
+
+EXPOSE 9000
