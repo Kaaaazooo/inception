@@ -50,15 +50,15 @@ volumes:
   wp:
     driver: local
     driver_opts:
-      o: bind
-      type: none
-      device: /home/sabrugie/data/wp
+      type: 'none'
+      o: 'bind'
+      device: '/home/sabrugie/data/wp'
   db:
     driver: local
     driver_opts:
-      o: bind
-      type: none
-      device: /home/sabrugie/data/db
+      type: 'none'
+      o: 'bind'
+      device: '/home/sabrugie/data/db'
 
 networks:
     inception:
