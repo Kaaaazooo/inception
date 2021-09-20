@@ -16,8 +16,7 @@ services:
   wordpress:
     depends_on:
       - mariadb
-        #build: requirements/wordpress
-    image: wordpress:5.1.1-fpm-alpine
+    build: requirements/wordpress
     container_name: wordpress
     restart: unless-stopped
     env_file: .env
