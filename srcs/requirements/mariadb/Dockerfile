@@ -12,4 +12,3 @@ RUN chmod +x run.sh
 EXPOSE 3306
 
 CMD ./run.sh
-#CMD tail -f /dev/null

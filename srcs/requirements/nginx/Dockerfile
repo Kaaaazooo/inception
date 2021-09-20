@@ -14,5 +14,4 @@ RUN	openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 \
 
 EXPOSE	443
 
-#CMD tail -f /dev/null
 CMD	["nginx", "-g", "daemon off;"]

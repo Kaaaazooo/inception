@@ -23,6 +23,7 @@ COPY tools/wp-config.php /var/www/wordpress/.
 COPY tools/run.sh /tmp/run.sh
 RUN chmod +x /tmp/run.sh 
 
+EXPOSE 9000
+
 ENTRYPOINT [ "/tmp/run.sh" ]
 
-EXPOSE 9000
