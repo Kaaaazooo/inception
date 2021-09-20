@@ -14,6 +14,6 @@ volumes:
 	sudo chown -R 100:101 $(LOCAL_VOL)/db )
 
 down:
-	docker-compose -f srcs/docker-compose.yml && docker-compose down
+	docker-compose -f srcs/docker-compose.yml down
 
 re: down all
